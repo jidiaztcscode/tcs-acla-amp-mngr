@@ -30,6 +30,12 @@
 		<java.version>17</java.version>
 	</properties>
 	<dependencies>
+			<dependency>
+	    <groupId>com.azure.spring</groupId>
+	    <artifactId>azure-spring-boot-starter-active-directory</artifactId>
+	    <version>3.14.0</version>
+	</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
@@ -97,6 +103,12 @@
 			<scope>provided</scope>
 		</dependency>
 		
+		<!-- ...existing code... -->
+	<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+	</dependency>
+
 		<dependency>
   			<groupId>com.azure.spring</groupId>
   			<artifactId>azure-spring-boot-starter-keyvault-secrets</artifactId>
