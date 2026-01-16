@@ -16,7 +16,7 @@ import com.davivienda.pensionados.model.Profile;
 import com.davivienda.pensionados.repository.MenuRepository;
 import com.davivienda.pensionados.repository.ProfileRepository;
 import com.davivienda.pensionados.service.ProfileService;
-import com.davivienda.pensionados.utils.SecurityLog;
+import com.davivienda.pensionados.utils.SecurityLogs;
 
 @Service
 public class ProfileServiceImpl implements ProfileService {
@@ -51,7 +51,7 @@ public Profile createProfile(Profile profile) {
     }
     profile.setMenus(attachedMenus);
 
-    SecurityLog.log("Profile created: " + profile.getName());
+    SecurityLogs.log("Profile created: " + profile.getName());
     return profileRepository.save(profile);
 }
 
@@ -79,7 +79,7 @@ public Profile updateProfile(Long id, Profile updated) {
     profile.setDescription(updated.getDescription());
     profile.setMenus(attachedMenus);
 
-    SecurityLog.log("Profile updated: " + profile.getName());
+    SecurityLogs.log("Profile updated: " + profile.getName());
     return profileRepository.save(profile);
 }
 
@@ -89,7 +89,7 @@ public Profile updateProfile(Long id, Profile updated) {
                 .orElseThrow(() -> new NoSuchElementException("Profile not found"));
         profile.setActive(active);
         profileRepository.save(profile);
-        SecurityLog.log("Profile " + (active ? "activated" : "deactivated") + ": " + profile.getName());
+        SecurityLogs.log("Profile " + (active ? "activated" : "deactivated") + ": " + profile.getName());
     }
 
 
