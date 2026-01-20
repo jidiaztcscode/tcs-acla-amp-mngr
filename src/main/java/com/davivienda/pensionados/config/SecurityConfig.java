@@ -3,43 +3,37 @@ package com.davivienda.pensionados.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
-import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
- 
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
- 
-	@Bean
+
+    @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            /*.authorizeHttpRequests(auth -> auth
-                .requestMatchers(new AntPathRequestMatcher("/api/public/**")).permitAll()
-                .anyRequest().authenticated()
+            .csrf(csrf -> csrf.disable()) // Disable CSRF for APIs (use cautiously in production)
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers(new AntPathRequestMatcher("/api/public/**")).permitAll() // Public endpoints
+                .anyRequest().authenticated() // All other endpoints require authentication
             )
             .oauth2ResourceServer(oauth2 -> oauth2
-                .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
-            );*/
-        
-        	.csrf(csrf -> csrf.disable())
-        	.authorizeHttpRequests(auth -> auth.anyRequest().permitAll()
-        	);
+                .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())) // Use JWT for authentication
+            );
         return http.build();
     }
- 
-    /*private JwtAuthenticationConverter jwtAuthenticationConverter() {
+
+    private JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-        grantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
-        grantedAuthoritiesConverter.setAuthoritiesClaimName("roles");
- 
+        grantedAuthoritiesConverter.setAuthorityPrefix("ROLE_"); // Prefix roles with "ROLE_"
+        grantedAuthoritiesConverter.setAuthoritiesClaimName("roles"); // Map roles from the "roles" claim
+
         JwtAuthenticationConverter jwtConverter = new JwtAuthenticationConverter();
         jwtConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
         return jwtConverter;
-    }*/
+    }
 }
- 
