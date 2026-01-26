@@ -9,6 +9,9 @@ import com.davivienda.pensionados.repository.PensionerRepositoryImpl;
 import com.davivienda.pensionados.service.PensionerService;
 import com.davivienda.pensionados.utils.InputValidator;
 
+import org.springframework.stereotype.Service;
+
+@Service
 public class PensionerServiceImpl implements PensionerService {
 
     private final PensionerRepository pensionerRepository;
@@ -34,7 +37,6 @@ public class PensionerServiceImpl implements PensionerService {
         }
         return pensionerRepository.findByAccountNumber(accountNumber);
     }
-
     @Override
     public void addAffiliation(String idNumber, String affiliationNumber, String payerNit) {
         // Validate inputs
@@ -50,14 +52,13 @@ public class PensionerServiceImpl implements PensionerService {
 
         Pensioner pensioner = pensionerRepository.findByIdNumber(idNumber);
         if (pensioner != null) {
-            pensioner.setAffiliationNumber(affiliationNumber);
+            pensioner.setNumeroIdPensionado(Long.parseLong(affiliationNumber));
             pensioner.setPayerNit(payerNit);
             pensionerRepository.update(pensioner);
         } else {
             throw new IllegalArgumentException("Pensioner with ID number " + idNumber + " not found.");
         }
     }
-
 
     @Override
     public void modifyAffiliation(String idNumber, String newAffiliationNumber) {
@@ -71,10 +72,10 @@ public class PensionerServiceImpl implements PensionerService {
 
         Pensioner pensioner = pensionerRepository.findByIdNumber(idNumber);
         if (pensioner != null) {
-            pensioner.setAffiliationNumber(newAffiliationNumber);
+            pensioner.setNumeroIdPensionado(Long.parseLong(newAffiliationNumber));
             pensionerRepository.update(pensioner);
         } else {
             throw new IllegalArgumentException("Pensioner with ID number " + idNumber + " not found.");
         }
-    }
+    }     
 }

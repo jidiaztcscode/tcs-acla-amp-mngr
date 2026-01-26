@@ -16,14 +16,19 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable()) // Disable CSRF for APIs (use cautiously in production)
+            .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers(new AntPathRequestMatcher("/api/public/**")).permitAll() // Public endpoints
-                .anyRequest().authenticated() // All other endpoints require authentication
+                .requestMatchers("/api/public/**").permitAll()
+                .requestMatchers("/swagger-ui/**").permitAll()
+                .requestMatchers("/v3/api-docs/**").permitAll()
+                .requestMatchers("/h2-console/**").permitAll()
+                .anyRequest().permitAll()
+                //.anyRequest().authenticated()
             )
-            .oauth2ResourceServer(oauth2 -> oauth2
-                .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())) // Use JWT for authentication
-            );
+            .headers(headers -> headers.frameOptions(frame -> frame.disable())); // Permitir iframes para H2 console
+            //.oauth2ResourceServer(oauth2 -> oauth2
+            //    .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
+            //);
         return http.build();
     }
 

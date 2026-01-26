@@ -34,4 +34,24 @@ public class FileUploadLog {
     private LocalDate uploadDate;
 
     // Getters and Setters
+    public Long getId() {
+        return id;
+    }
+    public String getFileName() {
+        return fileName;
+    }
+    public Integer getRecordsRead() {
+        return recordsRead;
+    }
+    public Integer getRecordsProcessed() {
+        return recordsProcessed;
+    }
+    public Integer getRecordsFailed() {
+        return recordsFailed;
+    }
+    public LocalDate getUploadDate() {
+        return uploadDate;
+    }
+
+    
 }

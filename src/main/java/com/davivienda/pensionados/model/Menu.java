@@ -50,5 +50,12 @@ public class Menu {
 		this.id = id;
 	}
 
-    // getters and setters
+	public Menu getParent() {
+		return parent;
+	}
+
+	public void setParent(Menu parent) {
+		this.parent = parent;
+	}
+	// getters and setters
 }

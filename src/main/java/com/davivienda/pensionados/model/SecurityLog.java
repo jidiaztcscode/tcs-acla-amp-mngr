@@ -18,7 +18,7 @@ public class SecurityLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user")
+    @Column(name = "[user]")
     private String user;
 
     @Column(name = "event_type")

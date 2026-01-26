@@ -33,7 +33,7 @@ public class ProcessLog {
     @Column(name = "end_date")
     private LocalDate endDate;
 
-    @Column(name = "user")
+    @Column(name = "[user]")
     private String user;
 
     // Getters and Setters

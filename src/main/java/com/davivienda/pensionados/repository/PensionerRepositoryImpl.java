@@ -12,7 +12,7 @@ public class PensionerRepositoryImpl implements PensionerRepository {
     @Override
     public Pensioner findByIdNumber(String idNumber) {
         return pensioners.stream()
-                .filter(p -> p.getIdNumber().equals(idNumber))
+                .filter(p -> p.getNumeroIdPensionado().equals(idNumber))
                 .findFirst()
                 .orElse(null);
     }
@@ -20,7 +20,7 @@ public class PensionerRepositoryImpl implements PensionerRepository {
     @Override
     public List<Pensioner> findByAccountNumber(String accountNumber) {
         return pensioners.stream()
-                .filter(p -> p.getAccountNumber().equals(accountNumber))
+                .filter(p -> p.getNumeroIdPensionado().equals(accountNumber))
                 .toList();
     }
 

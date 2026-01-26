@@ -3,93 +3,82 @@ package com.davivienda.pensionados.controller;
 import java.time.LocalDate;
 import java.util.List;
 
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+
 import com.davivienda.pensionados.model.Pensioner;
 import com.davivienda.pensionados.service.PensionerService;
-import com.davivienda.pensionados.serviceImpl.PensionerServiceImpl;
 import com.davivienda.pensionados.utils.InputValidator;
 
+@RestController
+@RequestMapping("/api/pensioners")
 public class PensionerController {
+
 	private final PensionerService pensionerService;
 
-	public PensionerController() {
-		this.pensionerService = new PensionerServiceImpl();
+	@Autowired
+	public PensionerController(PensionerService pensionerService) {
+		 this.pensionerService = pensionerService;
 	}
 
-	public String getPensionerById(String idNumber) {
-		// Validate the ID number before proceeding
-		if (!InputValidator.isValidIdNumber(idNumber)) {
-			return "The identification number must be between 3 and 16 digits.";
-		}
+	   @GetMapping("/by-id")
+	   public ResponseEntity<?> getPensionerById(@RequestParam String idNumber) {
+		   if (!InputValidator.isValidIdNumber(idNumber)) {
+			   return ResponseEntity.badRequest().body("The identification number must be between 3 and 16 digits.");
+		   }
+		   Pensioner pensioner = pensionerService.findByIdNumber(idNumber);
+		   if (pensioner == null) {
+			   return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Identification number not registered as a pensioner.");
+		   }
+		   return ResponseEntity.ok(pensioner);
+	   }
 
-		Pensioner pensioner = pensionerService.findByIdNumber(idNumber);
-		if (pensioner == null) {
-			return "Identification number not registered as a pensioner.";
-		}
+	   @GetMapping("/by-account")
+	   public ResponseEntity<?> getPensionersByAccount(@RequestParam String accountNumber) {
+		   if (!InputValidator.isValidIdNumber(accountNumber)) {
+			   return ResponseEntity.badRequest().body("The account number must be 16 digits long.");
+		   }
+		   List<Pensioner> pensioners = pensionerService.findByAccountNumber(accountNumber);
+		   if (pensioners.isEmpty()) {
+			   return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No affiliation numbers were found for this account or pensioner.");
+		   }
+		   return ResponseEntity.ok(pensioners);
+	   }
 
-		return pensioner.toString();
-	}
+	   @PostMapping("/add-affiliation")
+	   public ResponseEntity<?> addAffiliation(@RequestParam String idNumber,
+											   @RequestParam String affiliationNumber,
+											   @RequestParam String payerNit) {
+		   if (!InputValidator.isValidIdNumber(idNumber)) {
+			   return ResponseEntity.badRequest().body("The identification number must be between 3 and 16 digits.");
+		   }
+		   if (!InputValidator.isValidAffiliationNumber(affiliationNumber)) {
+			   return ResponseEntity.badRequest().body("The affiliation number field must be 12 digits long, if required complete with leading zeros.");
+		   }
+		   if (!InputValidator.isValidPayerNit(payerNit)) {
+			   return ResponseEntity.badRequest().body("The payer NIT must be between 3 and 16 digits.");
+		   }
+		   pensionerService.addAffiliation(idNumber, affiliationNumber, payerNit);
+		   return ResponseEntity.ok("Affiliation added successfully.");
+	   }
 
-	public String getPensionersByAccount(String accountNumber) {
-		// Validate the account number before proceeding
-		if (!InputValidator.isValidIdNumber(accountNumber)) {
-			return "The account number must be 16 digits long.";
-		}
-
-		List<Pensioner> pensioners = pensionerService.findByAccountNumber(accountNumber);
-		if (pensioners.isEmpty()) {
-			return "No affiliation numbers were found for this account or pensioner.";
-		}
-
-		return pensioners.toString();
-	}
-
-	public String addAffiliation(String idNumber, String affiliationNumber, String payerNit) {
-		// Validate inputs
-        if (!InputValidator.isValidIdNumber(idNumber)) {
-            return "The identification number must be between 3 and 16 digits.";
-        }
-        if (!InputValidator.isValidAffiliationNumber(affiliationNumber)) {
-            // Display notice for invalid affiliation number length
-            return "The affiliation number field must be 12 digits long, if required complete with leading zeros.";
-        }
-        if (!InputValidator.isValidPayerNit(payerNit)) {
-            return "The payer NIT must be between 3 and 16 digits.";
-        }
-
-        // Show confirmation notice
-        System.out.println("The affiliation number " + affiliationNumber + " will be added for the account " + idNumber +
-                ", associated with the company: " + payerNit + ". Press Accept to proceed or Cancel to abort.");
-
-		// Call the service to add the affiliation
-		pensionerService.addAffiliation(idNumber, affiliationNumber, payerNit);
-		return "Affiliation added successfully.";
-	}
-
-	public String modifyAffiliation(String idNumber, String newAffiliationNumber) {
-		// Validate inputs
-		if (!InputValidator.isValidIdNumber(idNumber)) {
-			return "The identification number must be between 3 and 16 digits.";
-		}
-		if (!InputValidator.isValidAffiliationNumber(newAffiliationNumber)) {
-			return "The new affiliation number must be 12 digits long.";
-		}
-		
-		// Fetch the pensioner to get modification history
-        Pensioner pensioner = pensionerService.findByIdNumber(idNumber);
-        if (pensioner == null) {
-            return "Pensioner with the given ID number not found.";
-        }
-        
-        // Simulate modification history (this would come from the database in a real application)
-        int modificationCount = 3; // Example: Assume the affiliation number has been modified 3 times
-        LocalDate lastModifiedDate = LocalDate.of(2025, 12, 15); // Example: Last modification date
-
-        // Show confirmation notice
-        System.out.println("Previously the affiliation number has been modified " + modificationCount + " time(s), the last update was made on " + lastModifiedDate + ".");
-        System.out.println("If you continue, the " + pensioner.getAffiliationNumber() + " affiliation number will be replaced by the " + newAffiliationNumber + " number. Press OK to proceed or Cancel to abort.");
-
-		// Call the service to modify the affiliation
-		pensionerService.modifyAffiliation(idNumber, newAffiliationNumber);
-		return "Affiliation modified successfully.";
-	}
+	   @PutMapping("/modify-affiliation")
+	   public ResponseEntity<?> modifyAffiliation(@RequestParam String idNumber,
+												  @RequestParam String newAffiliationNumber) {
+		   if (!InputValidator.isValidIdNumber(idNumber)) {
+			   return ResponseEntity.badRequest().body("The identification number must be between 3 and 16 digits.");
+		   }
+		   if (!InputValidator.isValidAffiliationNumber(newAffiliationNumber)) {
+			   return ResponseEntity.badRequest().body("The new affiliation number must be 12 digits long.");
+		   }
+		   Pensioner pensioner = pensionerService.findByIdNumber(idNumber);
+		   if (pensioner == null) {
+			   return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Pensioner with the given ID number not found.");
+		   }
+		   pensionerService.modifyAffiliation(idNumber, newAffiliationNumber);
+		   return ResponseEntity.ok("Affiliation modified successfully.");
+	   }
 }

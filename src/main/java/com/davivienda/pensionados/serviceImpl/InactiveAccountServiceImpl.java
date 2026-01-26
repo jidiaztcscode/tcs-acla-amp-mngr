@@ -27,9 +27,9 @@ public class InactiveAccountServiceImpl implements InactiveAccountService {
             String idNumber,
             String employerAccount
     ) {
-        List<InactiveAccount> accounts = repository.findByInactivityDateBetweenAndCompanyNITAndIdNumberAndEmployerAccount(
-                startDate, endDate, companyNIT, idNumber, employerAccount
-        );
+    List<InactiveAccount> accounts = repository.findByFilters(
+        startDate, endDate, companyNIT, idNumber, employerAccount
+    );
 
         if (accounts.isEmpty()) {
             throw new RuntimeException("No results found for the given search criteria.");

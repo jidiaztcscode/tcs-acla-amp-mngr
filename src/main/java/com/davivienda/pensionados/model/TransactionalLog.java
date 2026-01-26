@@ -18,7 +18,7 @@ public class TransactionalLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user")
+    @Column(name = "[user]")
     private String user;
 
     @Column(name = "product_number")
