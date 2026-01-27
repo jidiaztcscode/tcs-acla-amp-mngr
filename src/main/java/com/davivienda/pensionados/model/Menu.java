@@ -10,6 +10,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 @Entity
 public class Menu {
@@ -24,6 +26,7 @@ public class Menu {
     private Menu parent; // null if top-level menu
 
     @OneToMany(mappedBy = "parent")
+	@JsonInclude(JsonInclude.Include.NON_EMPTY)
     private Set<Menu> subMenus;
 
 	public Set<Menu> getSubMenus() {
@@ -50,6 +53,7 @@ public class Menu {
 		this.id = id;
 	}
 
+	@JsonIgnore
 	public Menu getParent() {
 		return parent;
 	}
