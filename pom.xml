@@ -113,8 +113,7 @@
 			<version>1.5.5.Final</version>
 			<scope>provided</scope>
 		</dependency>
-		
-		<!-- ...existing code... -->
+
 		<dependency>
   			<groupId>com.azure.spring</groupId>
   			<artifactId>azure-spring-boot-starter-keyvault-secrets</artifactId>
@@ -144,18 +143,21 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<executions>
+        			<execution>
+            			<goals>
+                			<goal>repackage</goal>
+            			</goals>
+        			</execution>
+    			</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.10</version> <!-- Usa la última versión disponible -->
-				<configuration>
-					<excludes>
-						<exclude>**/*DTO*</exclude> 
-					</excludes>
-				</configuration>
+				<version>0.8.12</version>
 				<executions>
 					<execution>
+						<id>prepare-agent</id>
 						<goals>
 							<goal>prepare-agent</goal>
 						</goals>
@@ -170,6 +172,8 @@
 				</executions>
 			</plugin>
 		</plugins>
+
+		<finalName>amp-backend</finalName>
 	</build>
 
 </project>

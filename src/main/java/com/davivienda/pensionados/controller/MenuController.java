@@ -32,10 +32,8 @@ public class MenuController {
 
     @GetMapping("/api/menu")
     public MenuResponse getMenu(Authentication authentication) {
-        // PRUEBA RÁPIDA: Forzar el rol deseado aquí
         Set<String> roles = new HashSet<>();
-        roles.add("ROLE_AMP_Prod_Analista"); // Cambia aquí el rol para probar otros perfiles
-
+        roles.add("ROLE_AMP_Prod_Analista");
         // Buscar el primer perfil que coincida con los roles del usuario
         for (String role : roles) {
             if (role.startsWith("ROLE_")) {
