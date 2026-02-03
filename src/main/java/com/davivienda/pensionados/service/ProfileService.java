@@ -4,6 +4,8 @@ package com.davivienda.pensionados.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.davivienda.pensionados.dto.PaginatedResponse;
+import com.davivienda.pensionados.dto.ProfileDTO;
 import com.davivienda.pensionados.model.Profile;
 
 public interface ProfileService {
@@ -12,4 +14,5 @@ public interface ProfileService {
     Profile createProfile(Profile profile);
     Profile updateProfile(Long id, Profile updated);
     void setActive(Long id, boolean active);
+    PaginatedResponse<ProfileDTO> getProfilesPaginated(int page, int pageSize);
 }

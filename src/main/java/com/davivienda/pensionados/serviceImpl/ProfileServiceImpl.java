@@ -6,11 +6,17 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.davivienda.pensionados.dto.PaginatedResponse;
+import com.davivienda.pensionados.dto.ProfileDTO;
 import com.davivienda.pensionados.model.Menu;
 import com.davivienda.pensionados.model.Profile;
 import com.davivienda.pensionados.repository.MenuRepository;
@@ -34,6 +40,30 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public Optional<Profile> getProfile(Long id) {
         return profileRepository.findById(id);
+    }
+
+    @Override
+    public PaginatedResponse<ProfileDTO> getProfilesPaginated(int page, int pageSize) {
+        // Ensure page is at least 0
+        if (page < 1) {
+            page = 1;
+        }
+        
+        Pageable pageable = PageRequest.of(page - 1, pageSize);
+        Page<Profile> profilePage = profileRepository.findAll(pageable);
+        
+        // Convert Profile entities to ProfileDTOs
+        List<ProfileDTO> dtoList = profilePage.getContent()
+            .stream()
+            .map(profile -> new ProfileDTO(profile.getId(), profile.getName(), profile.getDescription(), profile.isActive()))
+            .collect(Collectors.toList());
+        
+        return new PaginatedResponse<>(
+            dtoList,
+            profilePage.getTotalElements(),
+            page,
+            pageSize
+        );
     }
 
 @Override
@@ -91,8 +121,4 @@ public Profile updateProfile(Long id, Profile updated) {
         profileRepository.save(profile);
         SecurityLogs.log("Profile " + (active ? "activated" : "deactivated") + ": " + profile.getName());
     }
-
-
-
-
 }

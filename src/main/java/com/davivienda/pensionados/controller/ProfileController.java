@@ -18,19 +18,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.davivienda.pensionados.dto.PaginatedResponse;
+import com.davivienda.pensionados.dto.ProfileDTO;
 import com.davivienda.pensionados.model.Profile;
 import com.davivienda.pensionados.service.ProfileService;
 import com.davivienda.pensionados.utils.ExcelExporter;
 
 @RestController
-@RequestMapping("/api/profiles")
+@RequestMapping("/profiles")
 public class ProfileController {
     @Autowired
     private ProfileService profileService;
 
     @GetMapping
-    public List<Profile> getAllProfiles() {
-        return profileService.getAllProfiles();
+    public PaginatedResponse<ProfileDTO> getProfiles(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int pageSize) {
+        return profileService.getProfilesPaginated(page, pageSize);
     }
 
     @GetMapping("/{id}")

@@ -32,11 +32,12 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/public/**").permitAll()
+                .requestMatchers("/public/**").permitAll()
+                .requestMatchers("/profiles/**").permitAll() // Permitir acceso a perfiles en desarrollo
                 .requestMatchers("/swagger-ui/**").permitAll()
                 .requestMatchers("/v3/api-docs/**").permitAll()
                 .requestMatchers("/h2-console/**").permitAll()
-                .anyRequest().authenticated()
+                .anyRequest().permitAll()
             )
             .headers(headers -> headers.frameOptions(frame -> frame.disable())) // Permitir iframes para H2 console
             .oauth2ResourceServer(oauth2 -> oauth2
