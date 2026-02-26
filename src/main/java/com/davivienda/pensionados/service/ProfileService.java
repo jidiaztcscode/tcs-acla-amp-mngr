@@ -11,8 +11,8 @@ import com.davivienda.pensionados.model.Profile;
 public interface ProfileService {
     List<Profile> getAllProfiles();
     Optional<Profile> getProfile(Long id);
+    PaginatedResponse<ProfileDTO> getProfilesPaginated(int page, int pageSize);
     Profile createProfile(Profile profile);
     Profile updateProfile(Long id, Profile updated);
     void setActive(Long id, boolean active);
-    PaginatedResponse<ProfileDTO> getProfilesPaginated(int page, int pageSize);
 }

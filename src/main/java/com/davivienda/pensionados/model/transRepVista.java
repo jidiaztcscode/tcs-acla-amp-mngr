@@ -1,0 +1,47 @@
+package com.davivienda.pensionados.model;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Table(name = "trans_rep_vista")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class transRepVista {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "IDVISTA", length = 10)
+    private java.math.BigDecimal idvista;
+
+    @Column(name = "NOMVISTA")
+    private String nomvista;
+
+    @Column(name = "DESCVISTA")
+    private String descvista;
+
+    @Column(name = "USU_CREA_APP", length = 50)
+    private String usuCreaApp;
+
+    @Column(name = "FEC_CREACION")
+    private java.time.LocalDateTime fecCreacion;
+
+    @Column(name = "USU_MOD_APP", length = 50)
+    private String usuModApp;
+
+    @Column(name = "FEC_MOD_APP")
+    private java.time.LocalDateTime fecModApp;
+
+}

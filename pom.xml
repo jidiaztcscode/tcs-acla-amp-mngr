@@ -29,7 +29,7 @@
 	<properties>
 		<java.version>17</java.version>
 	</properties>
-	<dependencies>
+<dependencies>
 			<dependency>
 	    <groupId>com.azure.spring</groupId>
 	    <artifactId>azure-spring-boot-starter-active-directory</artifactId>
@@ -135,6 +135,27 @@
     		<artifactId>nimbus-jose-jwt</artifactId>
     		<version>9.37.3</version>
 		</dependency>
+
+		<dependency>
+			<groupId>com.microsoft.sqlserver</groupId>
+			<artifactId>mssql-jdbc</artifactId>
+			<version>9.4.1.jre11</version>
+		</dependency>
+
+		<!-- Spring Security SAML2 - Commented out due to OpenSAML dependency issues -->
+		   <!-- To enable SAML2, you need to configure the Shibboleth repository with proper SSL certificates -->
+		   <!--
+		   <dependency>
+		       <groupId>org.springframework.security</groupId>
+		       <artifactId>spring-security-saml2-service-provider</artifactId>
+		   </dependency>
+		   -->
+	
+		<!-- Spring Session (opcional, para gestión de sesiones) -->
+    <dependency>
+        <groupId>org.springframework.session</groupId>
+        <artifactId>spring-session-core</artifactId>
+    </dependency>
 		
 	</dependencies>
 

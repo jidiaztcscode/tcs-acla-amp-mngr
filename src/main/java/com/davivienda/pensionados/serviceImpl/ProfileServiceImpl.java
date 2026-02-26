@@ -1,6 +1,5 @@
 package com.davivienda.pensionados.serviceImpl;
 
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -26,6 +25,7 @@ import com.davivienda.pensionados.utils.SecurityLogs;
 
 @Service
 public class ProfileServiceImpl implements ProfileService {
+
     @Autowired
     private ProfileRepository profileRepository;
 
@@ -121,4 +121,8 @@ public Profile updateProfile(Long id, Profile updated) {
         profileRepository.save(profile);
         SecurityLogs.log("Profile " + (active ? "activated" : "deactivated") + ": " + profile.getName());
     }
+
+
+
+
 }
