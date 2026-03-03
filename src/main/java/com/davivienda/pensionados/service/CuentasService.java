@@ -27,15 +27,25 @@ public class CuentasService {
     public PaginatedResponse<AperturaCuentaDto> consultarAperturas(CuentasQuery query) {
         CuentasQuery normalized = normalizeQuery(query, "IdAfiliacion");
         PaginatedResult<AperturaCuentaDto> result = repository.consultarAperturas(normalized);
-        return new PaginatedResponse<AperturaCuentaDto>(result.getItems(), result.getTotalRecords(),
-            normalized.getPagina(), normalized.getRegistrosPorPagina());
+        PaginatedResponse<AperturaCuentaDto> response = new PaginatedResponse<>();
+        response.setData(result.getItems());
+        response.setTotal(result.getTotalRecords());
+        response.setTotalPages(result.getTotalPages());
+        response.setPage(normalized.getPagina());
+        response.setPageSize(normalized.getRegistrosPorPagina());
+        return response;
     }
 
     public PaginatedResponse<CuentaInactivaDto> consultarInactivas(CuentasQuery query) {
         CuentasQuery normalized = normalizeQuery(query, "IdAfiliacion");
         PaginatedResult<CuentaInactivaDto> result = repository.consultarInactivas(normalized);
-        return new PaginatedResponse<CuentaInactivaDto>(result.getItems(), result.getTotalRecords(),
-            normalized.getPagina(), normalized.getRegistrosPorPagina());
+        PaginatedResponse<CuentaInactivaDto> response = new PaginatedResponse<>();
+        response.setData(result.getItems());
+        response.setTotal(result.getTotalRecords());
+        response.setTotalPages(result.getTotalPages());
+        response.setPage(normalized.getPagina());
+        response.setPageSize(normalized.getRegistrosPorPagina());
+        return response;
     }
 
     private CuentasQuery normalizeQuery(CuentasQuery query, String defaultSort) {

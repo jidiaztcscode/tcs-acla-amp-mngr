@@ -30,18 +30,28 @@ public class MesadasService {
     public PaginatedResponse<PagoMesadaDto> consultarPagos(MesadasQuery query) {
         MesadasQuery normalized = normalizeQuery(query, "NumeroIdPensionado");
         PaginatedResult<PagoMesadaDto> result = repository.consultarPagos(normalized);
-        return new PaginatedResponse<>(result.getItems(), result.getTotalRecords(),
-            normalized.getPagina(), normalized.getRegistrosPorPagina());
+        PaginatedResponse<PagoMesadaDto> response = new PaginatedResponse<>();
+        response.setData(result.getItems());
+        response.setTotal(result.getTotalRecords());
+        response.setTotalPages(result.getTotalPages());
+        response.setPage(normalized.getPagina());
+        response.setPageSize(normalized.getRegistrosPorPagina());
+        return response;
     }
 
     public PaginatedResponse<RechazoMesadaDto> consultarRechazos(MesadasQuery query) {
         MesadasQuery normalized = normalizeQuery(query, "NumeroIdPensionado");
         PaginatedResult<RechazoMesadaDto> result = repository.consultarRechazos(normalized);
-        return new PaginatedResponse<>(result.getItems(), result.getTotalRecords(),
-            normalized.getPagina(), normalized.getRegistrosPorPagina());
+        PaginatedResponse<RechazoMesadaDto> response = new PaginatedResponse<>();
+        response.setData(result.getItems());
+        response.setTotal(result.getTotalRecords());
+        response.setTotalPages(result.getTotalPages());
+        response.setPage(normalized.getPagina());
+        response.setPageSize(normalized.getRegistrosPorPagina());
+        return response;
     }
 
-    public List<CertificadoMesadaDto> consultarCertificados(LocalDate fechaInicio, LocalDate fechaFin) {
+    public List<CertificadoMesadaDto> consultarCertificados(LocalDate fechaInicio, LocalDate fechaFin, int pagina, int registros) {
         validateRange(fechaInicio, fechaFin);
         return repository.consultarCertificados(fechaInicio, fechaFin);
     }

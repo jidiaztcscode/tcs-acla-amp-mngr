@@ -98,8 +98,10 @@ public class MesadasController {
     @GetMapping("/certificados")
     public ResponseEntity<List<CertificadoMesadaDto>> consultarCertificados(
             @RequestParam("fechaInicio") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
-            @RequestParam("fechaFin") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin) {
-        return ResponseEntity.ok(mesadasService.consultarCertificados(fechaInicio, fechaFin));
+            @RequestParam("fechaFin") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin,
+            @RequestParam(value = "page", defaultValue = "1") int pagina,
+            @RequestParam(value = "size", defaultValue = "20") int registros) {
+        return ResponseEntity.ok(mesadasService.consultarCertificados(fechaInicio, fechaFin, pagina, registros));
     }
     
 }

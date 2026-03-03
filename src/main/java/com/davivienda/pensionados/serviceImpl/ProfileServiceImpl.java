@@ -58,12 +58,13 @@ public class ProfileServiceImpl implements ProfileService {
             .map(profile -> new ProfileDTO(profile.getId(), profile.getName(), profile.getDescription(), profile.isActive()))
             .collect(Collectors.toList());
         
-        return new PaginatedResponse<>(
-            dtoList,
-            profilePage.getTotalElements(),
-            page,
-            pageSize
-        );
+        PaginatedResponse<ProfileDTO> response = new PaginatedResponse<>();
+        response.setData(dtoList);
+        response.setTotal(profilePage.getTotalElements());
+        response.setTotalPages(profilePage.getTotalPages());
+        response.setPage(page);
+        response.setPageSize(pageSize);
+        return response;
     }
 
 @Override

@@ -1,11 +1,23 @@
 package com.davivienda.pensionados.dto;
 
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class PaginatedResponse<T> {
+
+    @JsonProperty("items")
     private List<T> data;
+
+    @JsonProperty("totalRecords")
     private long total;
+
+    @JsonProperty("totalPages")
+    private long totalPages;
+
+    @JsonProperty("page")
     private int page;
+
+    @JsonProperty("pageSize")
     private int pageSize;
 
     public PaginatedResponse() {}
@@ -15,6 +27,7 @@ public class PaginatedResponse<T> {
         this.total = total;
         this.page = page;
         this.pageSize = pageSize;
+        this.totalPages = pageSize > 0 ? (long) Math.ceil((double) total / pageSize) : 0;
     }
 
     public List<T> getData() {
@@ -31,6 +44,14 @@ public class PaginatedResponse<T> {
 
     public void setTotal(long total) {
         this.total = total;
+    }
+
+    public long getTotalPages() {
+        return totalPages;
+    }
+
+    public void setTotalPages(long totalPages) {
+        this.totalPages = totalPages;
     }
 
     public int getPage() {
