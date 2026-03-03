@@ -1,6 +1,7 @@
 package com.davivienda.pensionados.dto;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,4 +20,8 @@ public class ReportFilterDto {
     private BigDecimal tipoFiltro;
     private String valFiltro;
     private BigDecimal idDetconsulta2;
+    
+    // Date range fields for filtering
+    private LocalDateTime fechaInicio;
+    private LocalDateTime fechaFin;
 }

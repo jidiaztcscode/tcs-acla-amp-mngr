@@ -2,6 +2,7 @@ package com.davivienda.pensionados.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -168,6 +169,21 @@ public class ReportConfigService {
                     .valFiltro(filterDto.getValFiltro())
                     .idDetconsulta2(filterDto.getIdDetconsulta2())
                     .build();
+            
+            // Set date range values if present
+            if (filterDto.getFechaInicio() != null) {
+                filtrocons.setValFiltro(filterDto.getFechaInicio().toString());
+            }
+            if (filterDto.getFechaFin() != null) {
+                // Store end date in a separate field or append to valFiltro
+                // For simplicity, we'll append it to valFiltro with a separator
+                if (filtrocons.getValFiltro() != null) {
+                    filtrocons.setValFiltro(filtrocons.getValFiltro() + "|" + filterDto.getFechaFin().toString());
+                } else {
+                    filtrocons.setValFiltro(filterDto.getFechaFin().toString());
+                }
+            }
+            
             filtroconsRepository.save(filtrocons);
             nextId = nextId.add(BigDecimal.ONE);
         }
@@ -217,6 +233,45 @@ public class ReportConfigService {
                 .build();
     }
 
+    public List<Object> generarReporte(ReportConfigDto reportConfig) {
+        // This method would contain the logic to generate the report based on the configuration
+        // For now, we'll return a dummy list
+        return new ArrayList<>();
+    }
+
+    private ReportFilterDto toReportFilterDto(transRepFiltrocons entity) {
+        ReportFilterDto filterDto = ReportFilterDto.builder()
+                .idFiltro(entity.getIdFiltro())
+                .idDetvista(entity.getIdDetvista())
+                .orden(entity.getOrden())
+                .incluyente(entity.getIncluyente())
+                .tipoFiltro(entity.getTipoFiltro())
+                .valFiltro(entity.getValFiltro())
+                .idDetconsulta2(entity.getIdDetconsulta2())
+                .build();
+        
+        // Parse date range from valFiltro if it contains date information
+        if (entity.getValFiltro() != null) {
+            String[] parts = entity.getValFiltro().split("\\|");
+            if (parts.length > 0) {
+                try {
+                    filterDto.setFechaInicio(LocalDateTime.parse(parts[0]));
+                } catch (Exception e) {
+                    // Not a valid date format
+                }
+            }
+            if (parts.length > 1) {
+                try {
+                    filterDto.setFechaFin(LocalDateTime.parse(parts[1]));
+                } catch (Exception e) {
+                    // Not a valid date format
+                }
+            }
+        }
+        
+        return filterDto;
+    }
+
     private ReportColumnDto toReportColumnDto(transRepDetconsulta entity) {
         return ReportColumnDto.builder()
                 .idDetconsulta(entity.getIdDetconsulta())
@@ -226,18 +281,6 @@ public class ReportConfigService {
                 .tiporelleno(entity.getTiporelleno())
                 .tipojust(entity.getTipojust())
                 .longitud(entity.getLongitud())
-                .build();
-    }
-
-    private ReportFilterDto toReportFilterDto(transRepFiltrocons entity) {
-        return ReportFilterDto.builder()
-                .idFiltro(entity.getIdFiltro())
-                .idDetvista(entity.getIdDetvista())
-                .orden(entity.getOrden())
-                .incluyente(entity.getIncluyente())
-                .tipoFiltro(entity.getTipoFiltro())
-                .valFiltro(entity.getValFiltro())
-                .idDetconsulta2(entity.getIdDetconsulta2())
                 .build();
     }
 }
