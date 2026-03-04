@@ -54,7 +54,6 @@ public class CuentasRepository {
             new SqlParameter("TipoIdentificacion", Types.VARCHAR),
             new SqlParameter("NumeroCuentaPensionado", Types.NUMERIC),
             new SqlParameter("NumeroCuentaPagadora", Types.NUMERIC),
-            new SqlParameter("IdAfiliacion", Types.NUMERIC),
             new SqlParameter("ASC", Types.BIT),
             new SqlParameter("CampoOrdenamiento", Types.NVARCHAR),
             new SqlParameter("Pagina", Types.INTEGER),
@@ -86,7 +85,7 @@ public class CuentasRepository {
     public PaginatedResult<AperturaCuentaDto> consultarAperturas(CuentasQuery query) {
         String sort = sanitizeSort(query.getCampoOrdenamiento(), APERTURAS_ALLOWED_SORTS, "IdAfiliacion");
         Map<String, Object> result = jdbcTemplate.call(con -> {
-            CallableStatement cs = con.prepareCall("{call shppen.PR_REPORTE_APERTURA_CUENTAS_PENSIONADOS(?,?,?,?,?,?,?,?,?,?,?,?,?,?)}");
+            CallableStatement cs = con.prepareCall("{call shppen.PR_REPORTE_APERTURA_CUENTAS_PENSIONADOS(?,?,?,?,?,?,?,?,?,?,?,?,?)}");
             setDate(cs, 1, query.getFechaInicio());
             setDate(cs, 2, query.getFechaFin());
             setNumeric(cs, 3, query.getNumeroIdEmpresa());
@@ -94,13 +93,12 @@ public class CuentasRepository {
             setString(cs, 5, query.getTipoIdentificacion());
             setNumeric(cs, 6, query.getNumeroCuentaPensionado());
             setNumeric(cs, 7, query.getNumeroCuentaPagadora());
-            setNumeric(cs, 8, query.getIdAfiliacion());
-            cs.setBoolean(9, query.isAscending());
-            setString(cs, 10, sort);
-            cs.setInt(11, query.getPagina());
-            cs.setInt(12, query.getRegistrosPorPagina());
+            cs.setBoolean(8, query.isAscending());
+            setString(cs, 9, sort);
+            cs.setInt(10, query.getPagina());
+            cs.setInt(11, query.getRegistrosPorPagina());
+            cs.registerOutParameter(12, Types.BIGINT);
             cs.registerOutParameter(13, Types.BIGINT);
-            cs.registerOutParameter(14, Types.BIGINT);
             return cs;
         }, APERTURAS_PARAMS);
 
