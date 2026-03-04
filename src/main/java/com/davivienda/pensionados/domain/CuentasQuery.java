@@ -14,6 +14,7 @@ public class CuentasQuery {
     Long numeroIdPensionado;
     String tipoIdentificacion;
     Long numeroCuentaPensionado;
+    Long cuentaEmpleador;
     Long numeroCuentaPagadora;
     Long idAfiliacion;
     @Builder.Default

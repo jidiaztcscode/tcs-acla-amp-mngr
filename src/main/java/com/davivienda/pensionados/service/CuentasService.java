@@ -15,7 +15,6 @@ import com.davivienda.pensionados.utils.PaginatedResult;
 
 @Service
 public class CuentasService {
-
     private static final int MAX_PAGE_SIZE = 500;
 
     private final CuentasRepository repository;
@@ -25,7 +24,8 @@ public class CuentasService {
     }
 
     public PaginatedResponse<AperturaCuentaDto> consultarAperturas(CuentasQuery query) {
-        CuentasQuery normalized = normalizeQuery(query, "IdAfiliacion");
+        CuentasQuery normalized = normalizeQuery(query, "NombrePensionado");
+        normalized = normalizeAperturasSort(normalized);
         PaginatedResult<AperturaCuentaDto> result = repository.consultarAperturas(normalized);
         PaginatedResponse<AperturaCuentaDto> response = new PaginatedResponse<>();
         response.setData(result.getItems());
@@ -64,6 +64,16 @@ public class CuentasService {
                 .build();
     }
 
+    private CuentasQuery normalizeAperturasSort(CuentasQuery query) {
+        String sort = query.getCampoOrdenamiento();
+        if ("NumeroIdPensionado".equalsIgnoreCase(sort) || "IdAfiliacion".equalsIgnoreCase(sort)) {
+            return query.toBuilder()
+                    .campoOrdenamiento("NombrePensionado")
+                    .build();
+        }
+        return query;
+    }
+
     private void validateRange(LocalDate desde, LocalDate hasta) {
         Objects.requireNonNull(desde, "La fecha inicial es obligatoria");
         Objects.requireNonNull(hasta, "La fecha final es obligatoria");
@@ -71,5 +81,4 @@ public class CuentasService {
             throw new IllegalArgumentException("La fecha final debe ser mayor o igual a la fecha inicial");
         }
     }
-    
 }

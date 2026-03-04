@@ -35,6 +35,7 @@ public class CuentasController {
             @RequestParam(value = "documento", required = false) Long documento,
             @RequestParam(value = "tipoDocumento", required = false) String tipoDocumento,
             @RequestParam(value = "cuentaPensionado", required = false) Long cuentaPensionado,
+            @RequestParam(value = "cuentaEmpleador", required = false) Long cuentaEmpleador,
             @RequestParam(value = "cuentaPagadora", required = false) Long cuentaPagadora,
             @RequestParam(value = "afiliacion", required = false) Long afiliacion,
             @RequestParam(value = "page", defaultValue = "1") int pagina,
@@ -49,6 +50,7 @@ public class CuentasController {
                 .numeroIdPensionado(documento)
                 .tipoIdentificacion(tipoDocumento)
                 .numeroCuentaPensionado(cuentaPensionado)
+                .cuentaEmpleador(cuentaEmpleador)
                 .numeroCuentaPagadora(cuentaPagadora)
                 .idAfiliacion(afiliacion)
                 .ascending(!"desc".equalsIgnoreCase(direction))
@@ -64,11 +66,11 @@ public class CuentasController {
     public ResponseEntity<PaginatedResponse<CuentaInactivaDto>> consultarInactivas(
             @RequestParam("fechaInicio") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
             @RequestParam("fechaFin") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin,
-            @RequestParam(value = "empresa", required = true) Long empresa,
-            @RequestParam(value = "documento", required = true) Long documento,
-            @RequestParam(value = "tipoDocumento", required = true) String tipoDocumento,
-            @RequestParam(value = "cuentaPensionado", required = true) Long cuentaPensionado,
-            @RequestParam(value = "cuentaPagadora", required = true) Long cuentaPagadora,
+            @RequestParam(value = "empresa", required = false) Long empresa,
+            @RequestParam(value = "documento", required = false) Long documento,
+            @RequestParam(value = "tipoDocumento", required = false) String tipoDocumento,
+            @RequestParam(value = "cuentaPensionado", required = false) Long cuentaPensionado,
+            @RequestParam(value = "cuentaPagadora", required = false) Long cuentaPagadora,
             @RequestParam(value = "page", defaultValue = "1") int pagina,
             @RequestParam(value = "size", defaultValue = "20") int registros,
             @RequestParam(value = "sort", required = false) String sort,

@@ -53,7 +53,7 @@ public class CuentasRepository {
             new SqlParameter("NumeroIdPensionado", Types.NUMERIC),
             new SqlParameter("TipoIdentificacion", Types.VARCHAR),
             new SqlParameter("NumeroCuentaPensionado", Types.NUMERIC),
-            new SqlParameter("NumeroCuentaPagadora", Types.NUMERIC),
+            new SqlParameter("CuentaEmpleador", Types.NUMERIC),
             new SqlParameter("ASC", Types.BIT),
             new SqlParameter("CampoOrdenamiento", Types.NVARCHAR),
             new SqlParameter("Pagina", Types.INTEGER),
@@ -92,7 +92,7 @@ public class CuentasRepository {
             setNumeric(cs, 4, query.getNumeroIdPensionado());
             setString(cs, 5, query.getTipoIdentificacion());
             setNumeric(cs, 6, query.getNumeroCuentaPensionado());
-            setNumeric(cs, 7, query.getNumeroCuentaPagadora());
+            setNumeric(cs, 7, query.getCuentaEmpleador());
             cs.setBoolean(8, query.isAscending());
             setString(cs, 9, sort);
             cs.setInt(10, query.getPagina());
