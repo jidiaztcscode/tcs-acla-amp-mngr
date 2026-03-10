@@ -16,6 +16,10 @@ public class MesadasQuery {
     Long numeroIdPensionado;
     String tipoIdentificacion;
     Long numeroCuentaPagadora;
+    String numeroDocumento;
+    String periodoNomina;
+    String banco;
+    String cuenta;
     @Builder.Default
     boolean ascending = true;
     String campoOrdenamiento;
@@ -24,3 +28,4 @@ public class MesadasQuery {
     @Builder.Default
     int registrosPorPagina = 20;
 }
+

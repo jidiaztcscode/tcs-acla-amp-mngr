@@ -1,12 +1,14 @@
 package com.davivienda.pensionados.repository;
 
 import java.math.BigDecimal;
-// import java.security.Timestamp; // Removed because it's not needed
 import java.sql.CallableStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.sql.Date;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -14,12 +16,12 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import com.davivienda.pensionados.domain.MesadasQuery;
 import com.davivienda.pensionados.dto.PagoMesadaDto;
@@ -30,7 +32,7 @@ import com.davivienda.pensionados.utils.PaginatedResult;
 @Repository
 public class MesadasRepository {
 
-private static final DateTimeFormatter SQL_DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private static final DateTimeFormatter SQL_DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private static final DateTimeFormatter CERTIFICATE_DATE_FORMAT = DateTimeFormatter.BASIC_ISO_DATE;
 
     private static final Set<String> PAGOS_ALLOWED_SORTS = Set.of(
@@ -79,13 +81,6 @@ private static final DateTimeFormatter SQL_DATE_FORMAT = DateTimeFormatter.ofPat
             new SqlParameter("Registros_X_Pagina", Types.INTEGER),
             new SqlOutParameter("Paginas", Types.BIGINT),
             new SqlOutParameter("Registros", Types.BIGINT));
-
-    private static final List<SqlParameter> CERTIFICADO_PARAMS = List.of(
-            new SqlParameter("Fecha_Pago_Init", Types.VARCHAR),
-            new SqlParameter("Fecha_Pago_End", Types.VARCHAR),
-            new SqlOutParameter("FlagSalida", Types.NUMERIC),
-            new SqlOutParameter("msgSalida", Types.NVARCHAR));
-
     private final JdbcTemplate jdbcTemplate;
 
     public MesadasRepository(NamedParameterJdbcTemplate jdbcTemplate) {
@@ -146,25 +141,51 @@ private static final DateTimeFormatter SQL_DATE_FORMAT = DateTimeFormatter.ofPat
         return new PaginatedResult(items, totalRecords, totalPages);
     }
 
-    public List<CertificadoMesadaDto> consultarCertificados(LocalDate fechaInicio, LocalDate fechaFin) {
-        Map<String, Object> result = jdbcTemplate.call(con -> {
-            CallableStatement cs = con.prepareCall("{call shppen.PR_CERTIFICADOS_MESADAS(?,?,?,?)}");
-            cs.setString(1, formatCertificateDate(fechaInicio));
-            cs.setString(2, formatCertificateDate(fechaFin));
-            cs.registerOutParameter(3, Types.NUMERIC);
-            cs.registerOutParameter(4, Types.NVARCHAR);
-            return cs;
-        }, CERTIFICADO_PARAMS);
+    public PaginatedResult<CertificadoMesadaDto> consultarCertificados(MesadasQuery query) {
+        StringBuilder where = new StringBuilder(" where FechaPago >= ? and FechaPago <= ? ");
+        List<Object> params = new ArrayList<>();
+        params.add(Date.valueOf(query.getFechaInicio()));
+        params.add(Date.valueOf(query.getFechaFin()));
 
-        Number flag = (Number) result.get("FlagSalida");
-        if (flag != null && flag.intValue() != 0) {
-            String message = Objects.toString(result.get("msgSalida"), "Error desconocido generando certificados de mesadas");
-            throw new DataAccessException(message) {
-                private static final long serialVersionUID = 1L;
-            };
+        if (StringUtils.hasText(query.getNumeroDocumento())) {
+            where.append(" and NumeroDocumento like ? ");
+            params.add("%" + query.getNumeroDocumento().trim() + "%");
+        }
+        if (StringUtils.hasText(query.getPeriodoNomina())) {
+            where.append(" and PeriodoNomina like ? ");
+            params.add("%" + query.getPeriodoNomina().trim() + "%");
+        }
+        if (StringUtils.hasText(query.getBanco())) {
+            where.append(" and Banco like ? ");
+            params.add("%" + query.getBanco().trim() + "%");
+        }
+        if (StringUtils.hasText(query.getCuenta())) {
+            where.append(" and Cuenta like ? ");
+            params.add("%" + query.getCuenta().trim() + "%");
         }
 
-        return mapRows(result, this::mapCertificadoMesada);
+        String countSql = "select count(1) from shppen.View_Reporte_Pagos_Certificados_Mesadas" + where;
+        Long totalRecords = jdbcTemplate.queryForObject(countSql, params.toArray(), Long.class);
+        long total = totalRecords != null ? totalRecords : 0L;
+
+        int page = query.getPagina();
+        int pageSize = query.getRegistrosPorPagina();
+        int offset = Math.max(0, (page - 1) * pageSize);
+
+        String dataSql = "select * from shppen.View_Reporte_Pagos_Certificados_Mesadas"
+                + where
+                + " order by FechaPago desc offset ? rows fetch next ? rows only";
+        List<Object> pageParams = new ArrayList<>(params);
+        pageParams.add(offset);
+        pageParams.add(pageSize);
+
+        List<CertificadoMesadaDto> items = jdbcTemplate.query(
+                dataSql,
+                pageParams.toArray(),
+                (rs, rowNum) -> mapCertificadoMesada(rs));
+
+        long totalPages = pageSize == 0 ? 0 : (long) Math.ceil((double) total / pageSize);
+        return new PaginatedResult<>(items, total, totalPages);
     }
 
     private <T> List<T> mapRows(Map<String, Object> result, Function<Map<String, Object>, T> mapper) {
@@ -242,6 +263,32 @@ private static final DateTimeFormatter SQL_DATE_FORMAT = DateTimeFormatter.ofPat
                 .build();
     }
 
+    private CertificadoMesadaDto mapCertificadoMesada(ResultSet rs) throws SQLException {
+        return CertificadoMesadaDto.builder()
+                .tipoDocumento(getString(rs, "TipoDocumento"))
+                .numeroDocumento(getString(rs, "NumeroDocumento"))
+                .primerApellido(getString(rs, "PrimerApellido"))
+                .segundoApellido(getString(rs, "SegundoApellido"))
+                .primerNombre(getString(rs, "PrimerNombre"))
+                .segundoNombre(getString(rs, "SegundoNombre"))
+                .periodoNomina(getString(rs, "PeriodoNomina"))
+                .referencia(getString(rs, "Referencia"))
+                .banco(getString(rs, "Banco"))
+                .sucursal(getString(rs, "Sucursal"))
+                .cuenta(getString(rs, "Cuenta"))
+                .tipoCuenta(getString(rs, "TipodeCuenta"))
+                .valorNeto(rs.getBigDecimal("ValorNeto"))
+                .estadoPago(getString(rs, "EstadoPago"))
+                .fechaPago(parseCertificateDate(getString(rs, "FechaPago")))
+                .descripcionCausalNoPago(getString(rs, "DescripcionCausalNoPago"))
+                .causalNoPago(getString(rs, "CausalNoPago"))
+                .build();
+    }
+
+    private String getString(ResultSet rs, String column) throws SQLException {
+        String value = rs.getString(column);
+        return value != null ? value.trim() : null;
+    }
     private void setDate(CallableStatement cs, int index, LocalDate value) throws SQLException {
         Objects.requireNonNull(value, "La fecha es obligatoria para generar el reporte de mesadas");
         cs.setString(index, value.format(SQL_DATE_FORMAT));
@@ -367,3 +414,7 @@ private static final DateTimeFormatter SQL_DATE_FORMAT = DateTimeFormatter.ofPat
     }
     
 }
+
+
+
+

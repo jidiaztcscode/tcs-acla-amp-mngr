@@ -1,8 +1,6 @@
 package com.davivienda.pensionados.controller;
 
 import java.time.LocalDate;
-import java.util.List;
-
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -96,12 +94,39 @@ public class MesadasController {
     }
 
     @GetMapping("/certificados")
-    public ResponseEntity<List<CertificadoMesadaDto>> consultarCertificados(
+    public ResponseEntity<PaginatedResponse<CertificadoMesadaDto>> consultarCertificados(
             @RequestParam("fechaInicio") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
             @RequestParam("fechaFin") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin,
+            @RequestParam(value = "numeroDocumento", required = false) String numeroDocumento,
+            @RequestParam(value = "periodoNomina", required = false) String periodoNomina,
+            @RequestParam(value = "banco", required = false) String banco,
+            @RequestParam(value = "cuenta", required = false) String cuenta,
             @RequestParam(value = "page", defaultValue = "1") int pagina,
-            @RequestParam(value = "size", defaultValue = "20") int registros) {
-        return ResponseEntity.ok(mesadasService.consultarCertificados(fechaInicio, fechaFin, pagina, registros));
-    }
-    
+            @RequestParam(value = "size", defaultValue = "20") int registros,
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "direction", defaultValue = "asc") String direction) {
+
+        MesadasQuery query = MesadasQuery.builder()
+                .fechaInicio(fechaInicio)
+                .fechaFin(fechaFin)
+                .numeroDocumento(numeroDocumento)
+                .periodoNomina(periodoNomina)
+                .banco(banco)
+                .cuenta(cuenta)
+                .ascending(!"desc".equalsIgnoreCase(direction))
+                .campoOrdenamiento(sort)
+                .pagina(pagina)
+                .registrosPorPagina(registros)
+                .build();
+
+        return ResponseEntity.ok(mesadasService.consultarCertificados(query));
+    }    
 }
+
+
+
+
+
+
+
+

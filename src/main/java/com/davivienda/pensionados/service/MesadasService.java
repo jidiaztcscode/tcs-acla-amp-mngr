@@ -1,20 +1,18 @@
 package com.davivienda.pensionados.service;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import java.util.Objects;
 
 import com.davivienda.pensionados.domain.MesadasQuery;
 import com.davivienda.pensionados.dto.CertificadoMesadaDto;
-import com.davivienda.pensionados.dto.MesadaResumenDto;
 import com.davivienda.pensionados.dto.PagoMesadaDto;
 import com.davivienda.pensionados.dto.RechazoMesadaDto;
+import com.davivienda.pensionados.dto.PaginatedResponse;
 import com.davivienda.pensionados.repository.MesadasRepository;
 import com.davivienda.pensionados.utils.PaginatedResult;
-import com.davivienda.pensionados.dto.PaginatedResponse;
 
 @Service
 public class MesadasService {
@@ -51,9 +49,16 @@ public class MesadasService {
         return response;
     }
 
-    public List<CertificadoMesadaDto> consultarCertificados(LocalDate fechaInicio, LocalDate fechaFin, int pagina, int registros) {
-        validateRange(fechaInicio, fechaFin);
-        return repository.consultarCertificados(fechaInicio, fechaFin);
+    public PaginatedResponse<CertificadoMesadaDto> consultarCertificados(MesadasQuery query) {
+        MesadasQuery normalized = normalizeQuery(query, "NumeroDocumento");
+        PaginatedResult<CertificadoMesadaDto> result = repository.consultarCertificados(normalized);
+        PaginatedResponse<CertificadoMesadaDto> response = new PaginatedResponse<>();
+        response.setData(result.getItems());
+        response.setTotal(result.getTotalRecords());
+        response.setTotalPages(result.getTotalPages());
+        response.setPage(normalized.getPagina());
+        response.setPageSize(normalized.getRegistrosPorPagina());
+        return response;
     }
 
     private MesadasQuery normalizeQuery(MesadasQuery query, String defaultSort) {
@@ -79,5 +84,5 @@ public class MesadasService {
             throw new IllegalArgumentException("La fecha final debe ser mayor o igual a la fecha inicial");
         }
     }
-    
+
 }
