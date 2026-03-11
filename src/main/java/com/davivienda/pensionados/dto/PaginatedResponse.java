@@ -22,6 +22,14 @@ public class PaginatedResponse<T> {
 
     public PaginatedResponse() {}
 
+    public PaginatedResponse(List<T> data, long total, long totalPages, int page, int pageSize) {
+        this.data = data;
+        this.total = total;
+        this.totalPages = totalPages;
+        this.page = page;
+        this.pageSize = pageSize;
+    }
+
     public PaginatedResponse(List<T> data, long total, int page, int pageSize) {
         this.data = data;
         this.total = total;
