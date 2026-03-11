@@ -67,8 +67,7 @@ public class CuentasRepository {
             new SqlParameter("NumeroIdEmpresa", Types.NUMERIC),
             new SqlParameter("NumeroIdPensionado", Types.NUMERIC),
             new SqlParameter("TipoIdentificacion", Types.VARCHAR),
-            new SqlParameter("NumeroCuentaPensionado", Types.NUMERIC),
-            new SqlParameter("NumeroCuentaPagadora", Types.NUMERIC),
+            new SqlParameter("CuentaEmpleador", Types.NUMERIC),
             new SqlParameter("ASC", Types.BIT),
             new SqlParameter("CampoOrdenamiento", Types.NVARCHAR),
             new SqlParameter("Pagina", Types.INTEGER),
@@ -111,20 +110,19 @@ public class CuentasRepository {
     public PaginatedResult<CuentaInactivaDto> consultarInactivas(CuentasQuery query) {
         String sort = sanitizeSort(query.getCampoOrdenamiento(), INACTIVAS_ALLOWED_SORTS, "IdAfiliacion");
         Map<String, Object> result = jdbcTemplate.call(con -> {
-            CallableStatement cs = con.prepareCall("{call shppen.PR_REPORTE_CUENTAS_INACTIVAS(?,?,?,?,?,?,?,?,?,?,?,?,?)}");
+            CallableStatement cs = con.prepareCall("{call shppen.PR_REPORTE_CUENTAS_INACTIVAS(?,?,?,?,?,?,?,?,?,?,?,?)}");
             setDate(cs, 1, query.getFechaInicio());
             setDate(cs, 2, query.getFechaFin());
             setNumeric(cs, 3, query.getNumeroIdEmpresa());
             setNumeric(cs, 4, query.getNumeroIdPensionado());
             setString(cs, 5, query.getTipoIdentificacion());
-            setNumeric(cs, 6, query.getNumeroCuentaPensionado());
-            setNumeric(cs, 7, query.getNumeroCuentaPagadora());
-            cs.setBoolean(8, query.isAscending());
-            setString(cs, 9, sort);
-            cs.setInt(10, query.getPagina());
-            cs.setInt(11, query.getRegistrosPorPagina());
+            setNumeric(cs, 6, query.getCuentaEmpleador());
+            cs.setBoolean(7, query.isAscending());
+            setString(cs, 8, sort);
+            cs.setInt(9, query.getPagina());
+            cs.setInt(10, query.getRegistrosPorPagina());
+            cs.registerOutParameter(11, Types.BIGINT);
             cs.registerOutParameter(12, Types.BIGINT);
-            cs.registerOutParameter(13, Types.BIGINT);
             return cs;
         }, INACTIVAS_PARAMS);
 
@@ -281,3 +279,4 @@ public class CuentasRepository {
     }
     
 }
+

@@ -69,8 +69,7 @@ public class CuentasController {
             @RequestParam(value = "empresa", required = false) Long empresa,
             @RequestParam(value = "documento", required = false) Long documento,
             @RequestParam(value = "tipoDocumento", required = false) String tipoDocumento,
-            @RequestParam(value = "cuentaPensionado", required = false) Long cuentaPensionado,
-            @RequestParam(value = "cuentaPagadora", required = false) Long cuentaPagadora,
+            @RequestParam(value = "cuentaEmpleador", required = false) Long cuentaEmpleador,
             @RequestParam(value = "page", defaultValue = "1") int pagina,
             @RequestParam(value = "size", defaultValue = "20") int registros,
             @RequestParam(value = "sort", required = false) String sort,
@@ -82,8 +81,7 @@ public class CuentasController {
                 .numeroIdEmpresa(empresa)
                 .numeroIdPensionado(documento)
                 .tipoIdentificacion(tipoDocumento)
-                .numeroCuentaPensionado(cuentaPensionado)
-                .numeroCuentaPagadora(cuentaPagadora)
+                .cuentaEmpleador(cuentaEmpleador)
                 .ascending(!"desc".equalsIgnoreCase(direction))
                 .campoOrdenamiento(sort)
                 .pagina(pagina)
